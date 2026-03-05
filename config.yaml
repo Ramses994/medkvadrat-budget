@@ -1,0 +1,5 @@
+db_path: data/budget.db
+budget_csv: data/budget_2026_clean.csv
+requests_default_csv: data/IT_Zayavki_06.02.2026.csv
+telecom_dir: data/Payments_telecom_providers_2025&2026
+
