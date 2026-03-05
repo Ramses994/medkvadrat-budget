@@ -26,7 +26,7 @@ jobs:
 
       - name: Build EXE with PyInstaller
         run: |
-          pyinstaller --noconfirm --onefile --windowed --icon "assets\icon.ico" --name "ITBudgetMedkvadrat" run_app.py
+          pyinstaller --noconfirm --onefile --add-data "dashboard.py;." --collect-all streamlit --copy-metadata streamlit --icon "assets\icon.ico" --name "ITBudgetMedkvadrat" run_app.py
 
       - name: Compile Inno Setup Installer
         run: |
