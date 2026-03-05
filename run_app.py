@@ -1,21 +1,21 @@
-from pathlib import Path
-import subprocess
+import os
 import sys
+import multiprocessing
 
-from init_app import main as init_main
+def main():
+    # 1. Предохранитель для Windows: останавливает бесконечный запуск процессов
+    multiprocessing.freeze_support()
 
+    # 2. Указываем программе искать dashboard.py внутри распакованного .exe
+    if hasattr(sys, '_MEIPASS'):
+        os.chdir(sys._MEIPASS)
 
-BASE_DIR = Path(__file__).resolve().parent
-APP_PATH = BASE_DIR / "dashboard.py"
+    # 3. Запускаем Streamlit напрямую через его внутренний модуль
+    import streamlit.web.cli as stcli
+    
+    # Имитируем команду "streamlit run dashboard.py"
+    sys.argv = ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.headless=false"]
+    sys.exit(stcli.main())
 
-
-def main() -> None:
-    # Первичная инициализация данных/БД
-    init_main()
-    # Запуск Streamlit-приложения
-    subprocess.run([sys.executable, "-m", "streamlit", "run", str(APP_PATH)])
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-
