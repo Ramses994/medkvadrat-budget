@@ -48,7 +48,7 @@ a = Analysis(
     hiddenimports=[
         'config', 'init_app', 'init_db', 'create_data', 'parser',
         'analyze_telecom_payments', 'analyze_requests_vs_budget',
-    ] + collect_submodules('streamlit'),
+    ] + collect_submodules('streamlit') + collect_submodules('openpyxl'),
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
