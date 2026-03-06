@@ -86,12 +86,22 @@ def load_payments() -> pd.DataFrame:
         path = os.path.join(TELECOM_DIR, name)
         provider = os.path.splitext(name)[0]
 
-        df = pd.read_excel(path)
+        try:
+            df = pd.read_excel(path)
+        except Exception as e:
+            # В exe выводим причину в консоль, но не ломаем анализ целиком
+            print(f"[telecom] Не удалось прочитать файл {path}: {e}")
+            continue
+
         if df.empty:
             continue
 
-        date_col = detect_date_column(df)
-        amount_col = detect_amount_column(df)
+        try:
+            date_col = detect_date_column(df)
+            amount_col = detect_amount_column(df)
+        except Exception as e:
+            print(f"[telecom] Не удалось определить колонки даты/суммы в {path}: {e}")
+            continue
 
         tmp = df[[date_col, amount_col]].copy()
         tmp.columns = ["date_raw", "amount_raw"]
@@ -102,6 +112,10 @@ def load_payments() -> pd.DataFrame:
 
         tmp = tmp.dropna(subset=["date", "amount"])
         tmp = tmp[tmp["amount"] > 0]
+
+        if tmp.empty:
+            print(f"[telecom] В файле {path} не найдено положительных сумм после очистки.")
+            continue
 
         rows.append(tmp[["date", "amount", "provider"]])
 
