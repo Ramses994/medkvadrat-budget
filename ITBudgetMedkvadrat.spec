@@ -1,9 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
-from PyInstaller.utils.hooks import copy_metadata
+from PyInstaller.utils.hooks import copy_metadata, collect_data_files
 
 # Метаданные Streamlit — без них в exe вылетает PackageNotFoundError
 datas = list(copy_metadata('streamlit'))
+# Статика Streamlit (static/index.html и др.) — иначе в браузере "Page Not Found"
+datas += collect_data_files('streamlit')
 
 # Корень проекта: перебираем кандидатов (spec, cwd, в CI репо может быть в подпапке)
 _spec_dir = os.path.dirname(os.path.abspath(SPECPATH))
