@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
-from PyInstaller.utils.hooks import copy_metadata, collect_data_files
+from PyInstaller.utils.hooks import copy_metadata, collect_data_files, collect_submodules
 
 # Метаданные Streamlit — без них в exe вылетает PackageNotFoundError
 datas = list(copy_metadata('streamlit'))
@@ -45,8 +45,10 @@ a = Analysis(
     pathex=[project_dir],
     binaries=[],
     datas=datas,
-    hiddenimports=['config', 'init_app', 'init_db', 'create_data', 'parser',
-                   'analyze_telecom_payments', 'analyze_requests_vs_budget'],
+    hiddenimports=[
+        'config', 'init_app', 'init_db', 'create_data', 'parser',
+        'analyze_telecom_payments', 'analyze_requests_vs_budget',
+    ] + collect_submodules('streamlit'),
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
