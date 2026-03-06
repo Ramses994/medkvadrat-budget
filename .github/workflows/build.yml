@@ -25,10 +25,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build EXE with PyInstaller
+        working-directory: ${{ github.workspace }}
         run: |
           pyinstaller --noconfirm ITBudgetMedkvadrat.spec
 
       - name: Compile Inno Setup Installer
+        working-directory: ${{ github.workspace }}
         run: |
           iscc installer.iss
 

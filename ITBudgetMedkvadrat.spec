@@ -1,26 +1,42 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
 
-# Корень проекта (где лежит .spec)
-project_dir = os.path.dirname(os.path.abspath(SPECPATH))
-
-# Локальные модули и данные, чтобы приложение работало из exe
-datas = [
-    (os.path.join(project_dir, 'config.py'), '.'),
-    (os.path.join(project_dir, 'config.yaml'), '.'),
-    (os.path.join(project_dir, 'dashboard.py'), '.'),
-    (os.path.join(project_dir, 'init_db.py'), '.'),
-    (os.path.join(project_dir, 'init_app.py'), '.'),
-    (os.path.join(project_dir, 'create_data.py'), '.'),
-    (os.path.join(project_dir, 'parser.py'), '.'),
-    (os.path.join(project_dir, 'analyze_telecom_payments.py'), '.'),
-    (os.path.join(project_dir, 'analyze_requests_vs_budget.py'), '.'),
+# Корень проекта: перебираем кандидатов (spec, cwd, в CI репо может быть в подпапке)
+_spec_dir = os.path.dirname(os.path.abspath(SPECPATH))
+_cwd = os.path.getcwd()
+_candidates = [
+    _spec_dir,
+    _cwd,
+    os.path.join(_cwd, 'medkvadrat-budget'),  # GitHub Actions: repo в подпапке
 ]
-if os.path.isdir(os.path.join(project_dir, 'data')):
-    datas.append((os.path.join(project_dir, 'data'), 'data'))
+project_dir = None
+for _d in _candidates:
+    if _d and os.path.isfile(os.path.join(_d, 'config.py')):
+        project_dir = os.path.abspath(_d)
+        break
+if project_dir is None:
+    raise SystemExit(
+        "PyInstaller: project root not found (no config.py in any of %s)." % _candidates
+    )
+
+# Локальные модули и данные — добавляем только существующие пути
+_data_files = [
+    'config.py', 'config.yaml', 'dashboard.py', 'init_db.py', 'init_app.py',
+    'create_data.py', 'parser.py', 'analyze_telecom_payments.py', 'analyze_requests_vs_budget.py',
+]
+datas = []
+for _f in _data_files:
+    _path = os.path.join(project_dir, _f)
+    if os.path.isfile(_path):
+        datas.append((_path, '.'))
+    else:
+        raise SystemExit(f"PyInstaller: required file not found: {_path!r} (project_dir={project_dir!r})")
+_data_dir = os.path.join(project_dir, 'data')
+if os.path.isdir(_data_dir):
+    datas.append((_data_dir, 'data'))
 
 a = Analysis(
-    ['run_app.py'],
+    [os.path.join(project_dir, 'run_app.py')],
     pathex=[project_dir],
     binaries=[],
     datas=datas,
@@ -54,5 +70,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['assets\\icon.ico'],
+    icon=[os.path.join(project_dir, 'assets', 'icon.ico')],
 )
