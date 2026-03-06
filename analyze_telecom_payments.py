@@ -119,10 +119,14 @@ def summarize_last_12_months(df_all: pd.DataFrame) -> pd.DataFrame:
     today = datetime.today()
     start = (today - timedelta(days=365)).replace(hour=0, minute=0, second=0, microsecond=0)
 
+    # Основной сценарий — последние 12 месяцев
     mask = (df_all["date"] >= start) & (df_all["date"] <= today)
     df = df_all.loc[mask].copy()
+
+    # Запасной сценарий: если во временной рамке ничего нет (например, есть только 2025 год),
+    # используем все доступные данные целиком, чтобы не показывать "пусто".
     if df.empty:
-        return df
+        df = df_all.copy()
 
     df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
     summary = (
