@@ -1,6 +1,5 @@
 name: Build Windows Installer
 
-# Скрипт запускается вручную (workflow_dispatch) или при пуше в ветку main
 on:
   push:
     branches: [ "main" ]
@@ -8,15 +7,14 @@ on:
 
 jobs:
   build:
-    # Запрашиваем виртуальную машину на базе Windows
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -27,18 +25,15 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build EXE with PyInstaller
-        # Собираем в один файл (--onefile) без черного окна консоли (--noconsole)
         run: |
-          pyinstaller --noconfirm --onefile --windowed --icon "assets\icon.ico" --name "ITBudgetMedkvadrat" run_app.py
+          pyinstaller --noconfirm ITBudgetMedkvadrat.spec
 
       - name: Compile Inno Setup Installer
-        # Inno Setup уже предустановлен на Windows-серверах GitHub
         run: |
           iscc installer.iss
 
       - name: Upload Installer Artifact
-        # Загружаем готовый инсталлятор, чтобы вы могли его скачать
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ITBudgetMedkvadratSetup
           path: Output\ITBudgetMedkvadratSetup.exe

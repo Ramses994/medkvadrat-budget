@@ -1,21 +1,30 @@
-from pathlib import Path
-import subprocess
+import os
 import sys
+import multiprocessing
 
-from init_app import main as init_main
+def main():
+    # Предохранитель для Windows
+    multiprocessing.freeze_support()
 
+    # Отключаем запрос email и сбор статистики Streamlit
+    os.environ["STREAMLIT_GATHER_USAGE_STATS"] = "false"
 
-BASE_DIR = Path(__file__).resolve().parent
-APP_PATH = BASE_DIR / "dashboard.py"
+    # Переход в папку с распакованными файлами .exe
+    if hasattr(sys, '_MEIPASS'):
+        os.chdir(sys._MEIPASS)
 
+    import streamlit.web.cli as stcli
+    
+    # Запускаем Streamlit
+    sys.argv = [
+        "streamlit", 
+        "run", 
+        "dashboard.py", 
+        "--global.developmentMode=false", 
+        "--server.port=8501", 
+        "--server.headless=false"
+    ]
+    sys.exit(stcli.main())
 
-def main() -> None:
-    # Первичная инициализация данных/БД
-    init_main()
-    # Запуск Streamlit-приложения
-    subprocess.run([sys.executable, "-m", "streamlit", "run", str(APP_PATH)])
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-
