@@ -25,6 +25,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build EXE with PyInstaller
+        working-directory: .
         run: |
           pyinstaller --noconfirm ITBudgetMedkvadrat.spec
 
