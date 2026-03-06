@@ -1,11 +1,17 @@
 import os
+import sys
 from pathlib import Path
 from typing import Final
 
 import yaml
 
 
-BASE_DIR: Final[Path] = Path(__file__).resolve().parent
+# При запуске из exe (PyInstaller) используем папку установки, а не временную _MEI
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys.executable).resolve().parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent
+
 DATA_DIR: Final[Path] = BASE_DIR / "data"
 ASSETS_DIR: Final[Path] = BASE_DIR / "assets"
 

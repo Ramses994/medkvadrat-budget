@@ -1,10 +1,16 @@
 import os
+import sys
 from datetime import datetime, timedelta
 
 import pandas as pd
 from sqlalchemy import create_engine
 
-from config import TELECOM_DIR, BUDGET_DB_PATH
+try:
+    from config import TELECOM_DIR, BUDGET_DB_PATH
+except ModuleNotFoundError:
+    _base = os.path.dirname(os.path.abspath(sys.executable))
+    TELECOM_DIR = os.path.join(_base, "data", "Payments_telecom_providers_2025&2026")
+    BUDGET_DB_PATH = os.path.join(_base, "data", "budget.db")
 
 
 def detect_date_column(df: pd.DataFrame) -> str:

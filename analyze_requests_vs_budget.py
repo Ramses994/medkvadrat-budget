@@ -1,10 +1,16 @@
 import os
+import sys
 from datetime import datetime
 
 import pandas as pd
 from sqlalchemy import create_engine
 
-from config import BUDGET_DB_PATH, REQUESTS_DEFAULT_CSV
+try:
+    from config import BUDGET_DB_PATH, REQUESTS_DEFAULT_CSV
+except ModuleNotFoundError:
+    _base = os.path.dirname(os.path.abspath(sys.executable))
+    BUDGET_DB_PATH = os.path.join(_base, "data", "budget.db")
+    REQUESTS_DEFAULT_CSV = os.path.join(_base, "data", "IT_Zayavki_06.02.2026.csv")
 
 
 def load_plan() -> pd.DataFrame:

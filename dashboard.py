@@ -5,9 +5,17 @@ from sqlalchemy import create_engine, text
 from datetime import datetime
 import parser
 import os
+import sys
 import importlib
 
-from config import DB_URL
+try:
+    from config import DB_URL
+except ModuleNotFoundError:
+    # При запуске из собранного exe (PyInstaller) config может не попасть в бандл
+    _base = os.path.dirname(os.path.abspath(sys.executable))
+    _db = os.path.join(_base, "data", "budget.db")
+    DB_URL = f"sqlite:///{_db}"
+
 import analyze_telecom_payments as telecom_analyzer
 import analyze_requests_vs_budget as requests_analyzer
 
