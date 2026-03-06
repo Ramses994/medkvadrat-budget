@@ -1,5 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
+from PyInstaller.utils.hooks import copy_metadata
+
+# Метаданные Streamlit — без них в exe вылетает PackageNotFoundError
+datas = list(copy_metadata('streamlit'))
 
 # Корень проекта: перебираем кандидатов (spec, cwd, в CI репо может быть в подпапке)
 _spec_dir = os.path.dirname(os.path.abspath(SPECPATH))
@@ -24,7 +28,6 @@ _data_files = [
     'config.py', 'config.yaml', 'dashboard.py', 'init_db.py', 'init_app.py',
     'create_data.py', 'parser.py', 'analyze_telecom_payments.py', 'analyze_requests_vs_budget.py',
 ]
-datas = []
 for _f in _data_files:
     _path = os.path.join(project_dir, _f)
     if os.path.isfile(_path):
