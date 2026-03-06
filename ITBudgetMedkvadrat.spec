@@ -3,7 +3,7 @@ import os
 
 # Корень проекта: перебираем кандидатов (spec, cwd, в CI репо может быть в подпапке)
 _spec_dir = os.path.dirname(os.path.abspath(SPECPATH))
-_cwd = os.path.getcwd()
+_cwd = os.getcwd()
 _candidates = [
     _spec_dir,
     _cwd,
